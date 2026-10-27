@@ -2,7 +2,7 @@
 
 Two independent parts: **(1) User Management REST API (implemented in Go)** and **(2) Lottery Ticket Search System (design only)**.
 
-> **Observed verification (2026-10-27, Asia/Bangkok):** Independently re-ran `go test ./...`, `go test -race ./...`, `go vet ./...`, and `go build ./...` successfully on Go 1.27.1. Docker Compose build/start, live HTTP/MongoDB smoke checks, the 30-request duplicate-email race (one 201, 29 conflicts), the unique index, worker timing, and API shutdown/restart all passed. `go.sum` is tracked in Git. The assignment files are committed locally in focused groups; publishing and recipient-access confirmation remain pending. See [executed evidence and limitations](docs/verification.md). Lottery remains **design only**.
+> **Observed verification (2026-10-27, Asia/Bangkok):** Independently re-ran `go test ./...`, `go test -race ./...`, `go vet ./...`, and `go build ./...` successfully on Go 1.27.1. Docker Compose build/start, live HTTP/MongoDB smoke checks, the 30-request duplicate-email race (one 201, 29 conflicts), the unique index, worker timing, and API shutdown/restart all passed. `go.sum` is tracked in Git. The assignment files are committed locally in focused groups; publishing and recipient-access confirmation remain pending. See [executed evidence and limitations](docs/verification.md). Lottery remains **design only**. The Docker builder was subsequently updated to Go 1.27.3; that image has not yet been rebuilt with the new pin.
 
 ## Deliverables
 
@@ -15,7 +15,7 @@ Two independent parts: **(1) User Management REST API (implemented in Go)** and 
 
 ## Prerequisites
 
-- Go **1.25+** (MongoDB Go Driver v2.9.x requires Go >= 1.25).
+- Go **1.25+** for direct builds (MongoDB Go Driver v2.9.x requires Go >= 1.25). The Docker builder is pinned to Go **1.27.3**.
 - Docker Engine and Docker Compose plugin for container setup; or a local MongoDB server for direct Go run.
 - Network access for first-time module downloads.
 
@@ -200,7 +200,7 @@ go build ./...
 - [x] `go test ./...` succeeds.
 - [x] `go test -race ./...` succeeds.
 - [x] `go vet ./...` and `go build ./...` succeed.
-- [x] `docker compose up --build -d` succeeds (build cache reused); `/healthz` returns HTTP 200.
+- [x] The previous Docker Compose build/start passed with cached layers and `/healthz` returned HTTP 200. The builder has since moved to Go 1.27.3; rebuilding that image is pending.
 - [x] Register/login, create/get/list/update/delete tested with live MongoDB; response secret checks pass.
 - [x] 30 concurrent registrations: exactly one HTTP 201 and 29 HTTP 409; MongoDB `unique_email` has `unique: true`.
 - [x] Live routes reject missing/malformed/deleted-user JWT; unit tests reject tampered/expired/wrong-algorithm JWT.

@@ -10,7 +10,7 @@ Executed against `/Users/mac/Documents/backend-golang-assignment` and its existi
 | Initial `git status --short`, `git diff`, `git ls-files go.sum .env` | BLOCKED initially | No `.git` existed; Git reported “not a git repository”. There was no local Git diff or staging state to inspect. |
 | `ls -l go.sum` | PASS | Existing 4,510-byte candidate file; contents preserved. |
 | `.env` preparation | PRESERVED | Existing local file retained; no copy, secret replacement, or secret output. |
-| `docker compose up --build -d` | PASS, exit 0 | Image built using cached layers; existing API running; MongoDB healthy. |
+| `docker compose up --build -d` | PASS, exit 0 | Image built using cached layers with the then-current Go 1.25 builder; API running and MongoDB healthy. The Dockerfile was subsequently advanced to Go 1.27.3; that image has not been rebuilt yet. |
 | `docker compose ps` | PASS, exit 0 | API running on `127.0.0.1:8080`; MongoDB healthy with no published host port. API has no separate Docker healthcheck; HTTP health was probed directly. |
 | `curl --max-time 10 -i http://127.0.0.1:8080/healthz` | PASS, exit 0 | HTTP 200, `{"status":"ok"}`. |
 | `python3 scripts/smoke_test.py --base-url http://127.0.0.1:8080` | PASS, exit 0 | `SUCCESS: Live HTTP + MongoDB smoke checks passed.` |
@@ -122,3 +122,7 @@ At the end of the initial review, branch `codex/phase45-verification` had **30 s
 The earlier executed Go tests/race/vet/build and live smoke evidence remains recorded above. Go source/tests, module files, Docker files, smoke script, and local `.env` are unchanged since those successful checks. Those commands were **not re-run** during this documentation-only final review.
 
 Verification limitations remain: **Docker cached layers**, **reused MongoDB volume**, and **graceful shutdown under load not tested**. No fresh-volume or no-cache result is claimed. The local commits still need a reviewed push to the intended destination, then recipient access must be confirmed. The candidate must confirm the submission cutoff and any assessment AI-use/disclosure requirements. Push only after explicit approval.
+
+## Go toolchain update — 2026-10-27
+
+The Docker builder now uses the Go 1.27.3 image. `go.mod` remains at `go 1.25.0`, preserving the module's minimum supported Go version; the pinned builder selects a newer build toolchain. The successful Go tests/build recorded above ran with host Go 1.27.1, and the successful Compose build used cached layers from the earlier Go 1.25 Dockerfile. No Go tests or Docker rebuild have been run against the new 1.27.3 image; verify those before claiming the updated toolchain passed.
